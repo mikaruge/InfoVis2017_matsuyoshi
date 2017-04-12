@@ -29,11 +29,11 @@ Vec3.prototype.min = function()
     var min = this.x;
     if(this.x >= this.y)
     {
-	min = this.y
+	min = this.y;
     }
     if(min >= this.z)
     {
-	min = this.z
+	min = this.z;
     }
 
     return min;
@@ -46,11 +46,11 @@ Vec3.prototype.max = function()
     var max = this.x;
     if(this.x <= this.y)
     {
-	max = this.y
+	max = this.y;
     }
     if(max <= this.z)
     {
-	max = this.z
+	max = this.z;
     }
 
     return max;
@@ -60,25 +60,8 @@ Vec3.prototype.max = function()
 //mid method
 Vec3.prototype.mid = function()
 {
-    var min = this.x;
-    var max = this.x;
-
-    if(this.y<min)
-    {
-	min = this.y;
-    }
-    if(this.z<min)
-    {
-	min = this.z;
-    }
-    if(this.y>max)
-    {
-	max = this.y;
-    }
-    if(this.z>max)
-    {
-	max = this.z;
-    }
+    var min = this.min();
+    var max = this.max();
 
     if(this.x!=min && this.x!=max)
     {
@@ -92,7 +75,8 @@ Vec3.prototype.mid = function()
     {
 	mid = this.z;
     }
-    
-    return mid    
+  
+    return mid;   
 
 }
+
