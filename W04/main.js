@@ -52,15 +52,16 @@ function main_task2()
     renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
 
+    var light = new THREE.PointLight( 0xf111ff );
+    light.position.set(1,1,1);
+    scene.add(light);
+
     var geometry = new THREE.BoxGeometry( 1, 1, 1 );
     //var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
     var material = new THREE.MeshLambertMaterial( { color: 0xff111f } );
     var cube = new THREE.Mesh( geometry, material );
     scene.add( cube );
 
-    var light = new THREE.PointLight( 0xf111ff );
-    light.position.set(1,1,1);
-    scene.add(light);
 
     loop();
 
