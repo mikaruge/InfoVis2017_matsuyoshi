@@ -242,7 +242,7 @@ function main_task2()
         requestAnimationFrame( loop );
         Triangle.rotation.x += 0.001;
         Triangle.rotation.y += 0.001;
-	//controls.update();
+	controls.update();
         renderer.render( scene, camera );
     }
 }
