@@ -231,7 +231,7 @@ function main_task2()
 	var intersects = raycaster.intersectObject( Triangle );
 	if (intersects.length > 0)
 	{
-	    intersects[0].face.color.setRGB(1,0,0);
+	    intersects[0].face.color.setRGB(1,1,1);
 	    intersects[0].object.geometry.colorsNeedUpdate = true;
 	}
 
