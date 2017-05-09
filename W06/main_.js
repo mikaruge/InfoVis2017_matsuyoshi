@@ -17,9 +17,6 @@ function main_task1()
     renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
 
-    var light = new THREE.PointLight( 0xf111ff );
-    light.position.set(1,1,1);
-    scene.add(light);
 
     var controls = new THREE.OrbitControls(camera);
 
@@ -58,7 +55,7 @@ function main_task1()
     for(var i=0; i<12; i++){
         geometry.faces.push(new THREE.Face3(faces[i][0],faces[i][1],faces[i][2]));
     }
-    
+
 
     var material = new THREE.MeshBasicMaterial();
     material.vertexColors = THREE.FaceColors;
@@ -90,8 +87,14 @@ function main_task1()
     geometry.faces[10].vertexColors.push(new THREE.Color(0.5,0,0.5));
     geometry.faces[11].vertexColors.push(new THREE.Color(0.5,0.5,0));
 
+    geometry.computeFaceNormals();
+
     var Triangle = new THREE.Mesh(geometry, material);
     scene.add(Triangle);
+
+    var light = new THREE.PointLight( 0xffffff );
+    light.position.set(1,1,5);
+    scene.add(light);
     
     
     loop();
@@ -201,6 +204,9 @@ function main_task2()
     geometry.faces[9].vertexColors.push(new THREE.Color(0,0.5,0.5));
     geometry.faces[10].vertexColors.push(new THREE.Color(0.5,0,0.5));
     geometry.faces[11].vertexColors.push(new THREE.Color(0.5,0.5,0));
+
+    geometry.computeFaceNormals();
+
 
     var Triangle = new THREE.Mesh(geometry, material);
     scene.add(Triangle);
