@@ -42,8 +42,8 @@ function main()
     function loop()
     {
         requestAnimationFrame( loop );
-        //torus_knot.rotation.x += 0.01;
-        //torus_knot.rotation.y += 0.01;
+        torus_knot.rotation.x += 0.01;
+        torus_knot.rotation.y += 0.01;
 	controls.update();
         renderer.render( scene, camera );
     }
@@ -94,8 +94,8 @@ function main2()
     function loop()
     {
         requestAnimationFrame( loop );
-        //torus_knot.rotation.x += 0.01;
-        //torus_knot.rotation.y += 0.01;
+        torus_knot.rotation.x += 0.01;
+        torus_knot.rotation.y += 0.01;
 	controls.update();
         renderer.render( scene, camera );
     }
