@@ -83,9 +83,9 @@ function main()
     {
         var id = faces[i];
 	//0.1~0.8を0~255に変換
-        var S0 = Math.round((scalars[ id[0] ] - 0.1)*255/0.7);
-        var S1 = Math.round((scalars[ id[1] ] - 0.1)*255/0.7);
-        var S2 = Math.round((scalars[ id[2] ] - 0.1)*255/0.7);;
+        var S0 = parseInt(255/0.7*(scalars[ id[0] ] - 0.1));
+        var S1 = parseInt(255/0.7*(scalars[ id[1] ] - 0.1));
+        var S2 = parseInt(255/0.7*(scalars[ id[2] ] - 0.1));
         var C0 = new THREE.Color().setHex( cmap[ S0 ][1] );
         var C1 = new THREE.Color().setHex( cmap[ S1 ][1] );
         var C2 = new THREE.Color().setHex( cmap[ S2 ][1] );
