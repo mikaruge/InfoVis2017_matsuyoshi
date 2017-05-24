@@ -1,11 +1,47 @@
 function Isosurfaces( volume, isovalue )
 {
-    var geometry = new THREE.Geometry();
-    var material = new THREE.MeshLambertMaterial();
 
+
+    // Create color map
+    var RESOLUTION = 256;//resolution
+    var cmap = [];
+    for ( var i = 0; i < RESOLUTION; i++ )
+    {
+      var S = i / (RESOLUTION-1); // [0,1]
+      var R = 1;
+      var G = Math.max( 1.0-S, 0.0 );
+      var B = Math.max( 1.0-S, 0.0 );
+      var color = new THREE.Color( R, G, B );
+      cmap.push( [ S, '0x' + color.getHexString() ] );
+    }
+
+
+    
+    var geometry = new THREE.Geometry();
+    //var material = new THREE.MeshLambertMaterial();
+    var light = new THREE.PointLight();
+    light.position.set( 5, 5, 5 );
+    var material = new THREE.ShaderMaterial({
+        vertexColors: THREE.VertexColors,
+        vertexShader: document.getElementById('phong.vert').text,
+        fragmentShader: document.getElementById('phong.frag').text,
+	uniforms: {
+	    light_position: { type: "v3", value: light.position },
+	    color_value: { type: "v3", value: new THREE.Color().setHex( cmap[isovalue][1] ) }
+	}
+    });
+    
     var smin = volume.min_value;
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
+
+    var scalars = [
+	0.1,   // S0
+	0.2, // S1
+	0.8  // S2
+    ];
+
+    
 
     var lut = new KVS.MarchingCubesTable();
     var cell_index = 0;
@@ -62,7 +98,31 @@ function Isosurfaces( volume, isovalue )
 
     geometry.computeVertexNormals();
 
-    material.color = new THREE.Color( "white" );
+
+    
+
+    // Assign colors for each vertex
+    /*
+    var Color = new THREE.Color().setHex( cmap[isovalue][1] );
+    material.vertexColors = THREE.VertexColors;
+    var S_max = Math.max.apply(null,scalars);
+    var S_min = Math.min.apply(null,scalars);
+    for ( var i = 0; i < geometry.faces.length; i++ )
+    {
+	var S0 = scalars[ 0 ];
+	var S1 = scalars[ 1 ];
+	var S2 = scalars[ 2 ];
+	var C0 = GetColor(S0,S_min,S_max,cmap); 
+	var C1 = GetColor(S1,S_min,S_max,cmap); 
+	var C2 = GetColor(S2,S_min,S_max,cmap); 
+	geometry.faces[i].vertexColors.push( Color );
+	geometry.faces[i].vertexColors.push( Color );
+	geometry.faces[i].vertexColors.push( Color );
+    }*/
+    
+    //cmapの第一引数で、カラーマップ中の色を指定する.
+    //var Color = new THREE.Color().setHex( cmap[isovalue][1] );
+    //material.color = new THREE.Color( Color );
 
     return new THREE.Mesh( geometry, material );
 
@@ -111,5 +171,27 @@ function Isosurfaces( volume, isovalue )
     function interpolated_vertex( v0, v1, s )
     {
         return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
+    }
+
+    function GetColor(S,S_min,S_max,cmap){
+	var resolution = cmap.length
+	var index = Normalize(S,S_min,S_max)*(resolution-1);
+	var index0 = Math.floor(index);
+	var index1 = Math.min(index0+1,resolution-1);
+	var t = index - index0; // t = (index-index0)/(index1-index0)
+	var C0 = new THREE.Color().setHex( cmap[ index0 ][1] );
+	var C1 = new THREE.Color().setHex( cmap[ index1 ][1] );
+	var R = Interpolate(C0.r,C1.r,t);
+	var G = Interpolate(C0.g,C1.g,t);
+	var B = Interpolate(C0.b,C1.b,t);
+	return new THREE.Color(R,G,B);
+    }
+    
+    function Normalize(S,S_min,S_max){ // e.g. S:0.1~0.8 -> S:0~1
+	return (S-S_min)/(S_max-S_min);
+    }
+
+    function Interpolate(S0,S1,t){ 
+	return (1-t)*S0+t*S1;
     }
 }

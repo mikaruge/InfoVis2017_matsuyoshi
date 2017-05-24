@@ -84,8 +84,8 @@ function Isosurfaces( volume, isovalue )
 
     
 
-    // Assign colors for each vertex
-    
+    // Assign colors for each vertex(グラデーションをつける場合）
+    /*
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
     var S_min = Math.min.apply(null,scalars);
@@ -100,11 +100,11 @@ function Isosurfaces( volume, isovalue )
 	geometry.faces[i].vertexColors.push( C0 );
 	geometry.faces[i].vertexColors.push( C1 );
 	geometry.faces[i].vertexColors.push( C2 );
-    }
+    }*/
     
-    
-
-    //material.color = new THREE.Color( "white" );
+    //cmapの第一引数で、カラーマップ中の色を指定する.
+    var Color = new THREE.Color().setHex( cmap[128][1] );
+    material.color = new THREE.Color( Color );
 
     return new THREE.Mesh( geometry, material );
 
@@ -152,7 +152,17 @@ function Isosurfaces( volume, isovalue )
 
     function interpolated_vertex( v0, v1, s )
     {
-        return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
+	var xit = volume.resolution.x;
+	var yit = volume.resolution.y;
+	var id0 = v0.x + v0.y*xit + v0.z*xit*yit;
+	var id1 = v1.x + v1.y*xit + v1.z*xit*yit;
+	var s0 = volume.values[ id0 ][0];
+	var s1 = volume.values[ id1 ][0];
+	var t = (s - s0)/(s1 - s0);
+	var x = v0.x + t*(v1.x-v0.x);
+	var y = v0.y + t*(v1.y-v0.y);
+	var z = v0.z + t*(v1.z-v0.z);
+        return new THREE.Vector3(x,y,z);
     }
 
     function GetColor(S,S_min,S_max,cmap){

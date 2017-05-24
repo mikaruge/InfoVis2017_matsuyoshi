@@ -19,9 +19,9 @@ function Isosurfaces( volume, isovalue )
     for ( var i = 0; i < RESOLUTION; i++ )
     {
       var S = i / (RESOLUTION-1); // [0,1]
-      var R = 1;
-      var G = Math.max( 1.0-S, 0.0 );
-      var B = Math.max( 1.0-S, 0.0 );
+      var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+      var G = Math.max( Math.cos( ( S - 0.5 )* Math.PI ), 0.0 );
+      var B = Math.max( Math.cos(  S * Math.PI ), 0.0 );
       var color = new THREE.Color( R, G, B );
       cmap.push( [ S, '0x' + color.getHexString() ] );
     }
@@ -84,7 +84,7 @@ function Isosurfaces( volume, isovalue )
 
     
 
-    // Assign colors for each vertex
+    // Assign colors for each vertex(グラデーションをつける場合）
     /*
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
@@ -100,11 +100,11 @@ function Isosurfaces( volume, isovalue )
 	geometry.faces[i].vertexColors.push( C0 );
 	geometry.faces[i].vertexColors.push( C1 );
 	geometry.faces[i].vertexColors.push( C2 );
-    }
-    */
+    }*/
     
-
-    //material.color = new THREE.Color( "white" );
+    //cmapの第一引数で、カラーマップ中の色を指定する.
+    var Color = new THREE.Color().setHex( cmap[isovalue][1] );
+    material.color = new THREE.Color( Color );
 
     return new THREE.Mesh( geometry, material );
 

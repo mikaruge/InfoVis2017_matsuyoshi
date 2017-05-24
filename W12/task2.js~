@@ -84,7 +84,7 @@ function Isosurfaces( volume, isovalue )
 
     
 
-    // Assign colors for each vertex
+    // Assign colors for each vertex(グラデーションをつける場合）
     
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
@@ -102,9 +102,9 @@ function Isosurfaces( volume, isovalue )
 	geometry.faces[i].vertexColors.push( C2 );
     }
     
-    
-
-    //material.color = new THREE.Color( "white" );
+    //cmapの第一引数で、カラーマップ中の色を指定する.
+    //var Color = new THREE.Color().setHex( cmap[100][1] );
+   // material.color = new THREE.Color( Color );
 
     return new THREE.Mesh( geometry, material );
 
