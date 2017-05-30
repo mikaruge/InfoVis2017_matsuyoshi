@@ -1,0 +1,108 @@
+<html>
+    <head>
+	<title>W12: Task 03(Cook-Torrance reflection)</title>
+    </head>
+    <body style="margin:0">
+        <script src="three.min.js"></script>
+	<script src="Lut.js"></script>
+	<script src="TrackballControls.js"></script>
+	<script src="KVS.min.js"></script>
+	<script src="KVS2THREE.min.js"></script>
+	<script src="KVSLobsterData.js"></script>
+	<script src="Bounds.js"></script>
+	<script src="task3.js"></script>
+	<script src="task_main.js"></script>
+        <script type="x-shader/x-vertex" id="phong.vert">
+         varying vec3 point_color;
+	 varying vec4 point_position;
+	 varying vec3 normal_vector;
+         uniform vec3 light_position;
+	 uniform vec3 color_value;
+		    
+	 void main()
+         {
+	     //point_color = color;
+             point_color = color_value;
+             point_position = modelViewMatrix * vec4( position, 1.0 );
+	     normal_vector = normalMatrix * normal;
+	     
+	     gl_Position = projectionMatrix * point_position;
+	 }
+	</script>
+
+	<script type="x-shader/x-fragment" id="phong.frag">
+	 varying vec3 point_color;
+	 varying vec4 point_position;
+	 varying vec3 normal_vector;
+         uniform vec3 light_position;
+	 uniform vec3 camera_position;
+	 uniform vec3 color_value;
+
+	 vec3 LambertianReflection( vec3 C, vec3 L, vec3 N )
+	 {
+           float ka = 0.4;
+	   float kd = 0.6;
+
+	   float dd = max( dot( N,L ), 0.0 );
+	   float Ia = ka;
+	   float Id = kd * dd;
+	   return C*(Ia+Id);
+	 }
+
+	 vec3 PhongReflection( vec3 C, vec3 L, vec3 N )
+	 {
+	   float ka = 0.3;
+	   float kd = 0.5;
+	   float ks = 0.8;
+	   float n = 50.0;
+
+	   float roughness = 0.3;   //表面の粗さ（？）
+	   float f0 = 0.6;          //フレネル反射率
+	   float refraction;     //屈折率
+
+	   refraction = (1.0 + sqrt(f0))/(1.0 - sqrt(f0));    //フレネル反射率から屈折率を求める
+	 
+	   vec3 V = normalize( camera_position - point_position.xyz );
+	   vec3 H = normalize( L + V );
+
+           float NH = dot(N,H);
+	   float VH = dot(V,H);
+	   float NV = dot(N,V);
+	   float NL = dot(N,L);
+
+	   float alpha = acos(NH);
+
+	   float D = (1.0/(4.0*roughness*roughness*NH*NH*NH*NH))*exp((NH*NH-1.0)/(roughness*roughness*NH*NH));
+
+	   float G = min(1.0, min((2.0*NH*NV)/VH, (2.0*NH*NL)/VH));
+
+	   float c = VH;
+	   float g = sqrt(refraction*refraction-1.0);
+	   float F = ((g-c)*(g-c)/((g+c)*(g+c)))*(1.0+(c*(g+c)-1.0)*(c*(g+c)-1.0)/((c*(g-c)-1.0)*(c*(g-c)-1.0)));
+
+	 
+	   float dd = max( dot( N, L ), 0.0 );
+	   float ds = D*G*F/NV;                         
+	   if ( dd <= 0.0 ) { ds = 0.0; }
+		    
+           float Ia = ka;
+           float Id = kd * dd;
+           float Is = ks * ds;
+           return C * ( Ia + Id + Is );
+         }
+	 
+	 void main()
+	 {
+	     vec3 C = point_color;
+	     vec3 L = normalize( light_position - point_position.xyz );
+	     vec3 N = normalize( normal_vector );
+	 
+             vec3 shaded_color = PhongReflection( C, L, N );
+	     gl_FragColor = vec4( shaded_color, 1.0 );
+	 }
+	</script>
+	<script>
+	 main();
+	</script>
+    </body>
+</html>

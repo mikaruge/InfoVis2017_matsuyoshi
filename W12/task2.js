@@ -7,11 +7,12 @@ function Isosurfaces( volume, isovalue )
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
 
+    /*
     var scalars = [
 	0.1,   // S0
 	0.2, // S1
 	0.8  // S2
-    ];
+    ];*/
 
     // Create color map
     var RESOLUTION = 256;//resolution
@@ -19,9 +20,9 @@ function Isosurfaces( volume, isovalue )
     for ( var i = 0; i < RESOLUTION; i++ )
     {
       var S = i / (RESOLUTION-1); // [0,1]
-      var R = 1;
-      var G = Math.max( 1.0-S, 0.0 );
-      var B = Math.max( 1.0-S, 0.0 );
+      var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+      var G = Math.max( Math.cos( ( S - 0.5 )* Math.PI ), 0.0 );
+      var B = Math.max( Math.cos(  S * Math.PI ), 0.0 );
       var color = new THREE.Color( R, G, B );
       cmap.push( [ S, '0x' + color.getHexString() ] );
     }
@@ -84,7 +85,7 @@ function Isosurfaces( volume, isovalue )
 
     
 
-    // Assign colors for each vertex(グラデーションをつける場合）
+    // Assign colors for each vertex(各頂点に色をつける場合）
     /*
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
@@ -150,21 +151,23 @@ function Isosurfaces( volume, isovalue )
         return index;
     }
 
+    //線形補間する部分
     function interpolated_vertex( v0, v1, s )
     {
 	var xit = volume.resolution.x;
 	var yit = volume.resolution.y;
-	var id0 = v0.x + v0.y*xit + v0.z*xit*yit;
-	var id1 = v1.x + v1.y*xit + v1.z*xit*yit;
-	var s0 = volume.values[ id0 ][0];
-	var s1 = volume.values[ id1 ][0];
-	var t = (s - s0)/(s1 - s0);
+	var id0 = v0.x + v0.y*xit + v0.z*xit*yit;   //座標v0のインデックスを求める
+	var id1 = v1.x + v1.y*xit + v1.z*xit*yit;   //座標v1のインデックスを求める
+	var s0 = volume.values[ id0 ][0];         //id0からv0の値(?)を求める
+	var s1 = volume.values[ id1 ][0];         //id1からv1の値(?)を求める
+	var t = (s - s0)/(s1 - s0);               //v0とv1の間で線形補完を行う
 	var x = v0.x + t*(v1.x-v0.x);
 	var y = v0.y + t*(v1.y-v0.y);
 	var z = v0.z + t*(v1.z-v0.z);
         return new THREE.Vector3(x,y,z);
     }
 
+    /*
     function GetColor(S,S_min,S_max,cmap){
 	var resolution = cmap.length
 	var index = Normalize(S,S_min,S_max)*(resolution-1);
@@ -185,5 +188,5 @@ function Isosurfaces( volume, isovalue )
 
     function Interpolate(S0,S1,t){ 
 	return (1-t)*S0+t*S1;
-    }
+    }*/
 }

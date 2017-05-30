@@ -7,11 +7,12 @@ function Isosurfaces( volume, isovalue )
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
 
+    /*
     var scalars = [
 	0.1,   // S0
 	0.2, // S1
 	0.8  // S2
-    ];
+    ];*/
 
     // Create color map
     var RESOLUTION = 256;//resolution
@@ -84,7 +85,7 @@ function Isosurfaces( volume, isovalue )
 
     
 
-    // Assign colors for each vertex(グラデーションをつける場合）
+    // Assign colors for each vertex(各頂点毎に色をつける場合）
     /*
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
@@ -155,6 +156,7 @@ function Isosurfaces( volume, isovalue )
         return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
     }
 
+    /*
     function GetColor(S,S_min,S_max,cmap){
 	var resolution = cmap.length
 	var index = Normalize(S,S_min,S_max)*(resolution-1);
@@ -176,4 +178,5 @@ function Isosurfaces( volume, isovalue )
     function Interpolate(S0,S1,t){ 
 	return (1-t)*S0+t*S1;
     }
+    */
 }

@@ -1,28 +1,6 @@
 function Isosurfaces( volume, isovalue )
 {
-    var geometry = new THREE.Geometry();
-    //var material = new THREE.MeshLambertMaterial();
-    var light = new THREE.PointLight();
-    light.position.set( 5, 5, 5 );
-    var material = new THREE.ShaderMaterial({
-        vertexColors: THREE.VertexColors,
-        vertexShader: document.getElementById('phong.vert').text,
-        fragmentShader: document.getElementById('phong.frag').text,
-	uniforms: {
-	    light_position: { type: "v3", value: light.position },
-	    //camera_position: { type: "v3", value: camera.position }
-	}
-    });
-    
-    var smin = volume.min_value;
-    var smax = volume.max_value;
-    isovalue = KVS.Clamp( isovalue, smin, smax );
 
-    var scalars = [
-	0.1,   // S0
-	0.2, // S1
-	0.8  // S2
-    ];
 
     // Create color map
     var RESOLUTION = 256;//resolution
@@ -30,12 +8,43 @@ function Isosurfaces( volume, isovalue )
     for ( var i = 0; i < RESOLUTION; i++ )
     {
       var S = i / (RESOLUTION-1); // [0,1]
-      var R = 1;
-      var G = Math.max( 1.0-S, 0.0 );
-      var B = Math.max( 1.0-S, 0.0 );
+      var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+      var G = Math.max( Math.cos( ( S - 0.5 )* Math.PI ), 0.0 );
+      var B = Math.max( Math.cos(  S * Math.PI ), 0.0 );
       var color = new THREE.Color( R, G, B );
       cmap.push( [ S, '0x' + color.getHexString() ] );
     }
+
+
+    
+    var geometry = new THREE.Geometry();
+    //var material = new THREE.MeshLambertMaterial();
+    var light = new THREE.PointLight();
+    light.position.set( 5, 5, 5 );
+
+    //ƒJƒ‰[ƒ}ƒbƒv‚©‚ç”²‚«o‚µ‚½F‚Ìî•ñ‚ğƒVƒF[ƒ_[‚É“n‚·•K—v‚ª‚ ‚é.
+    var material = new THREE.ShaderMaterial({
+        vertexColors: THREE.VertexColors,
+        vertexShader: document.getElementById('phong.vert').text,
+        fragmentShader: document.getElementById('phong.frag').text,
+	uniforms: {
+	    light_position: { type: "v3", value: light.position },
+	    color_value: { type: "v3", value: new THREE.Color().setHex( cmap[isovalue][1] ) }
+	}
+    });
+    
+    var smin = volume.min_value;
+    var smax = volume.max_value;
+    isovalue = KVS.Clamp( isovalue, smin, smax );
+
+    /*
+    var scalars = [
+	0.1,   // S0
+	0.2, // S1
+	0.8  // S2
+    ];*/
+
+    
 
     var lut = new KVS.MarchingCubesTable();
     var cell_index = 0;
@@ -96,6 +105,7 @@ function Isosurfaces( volume, isovalue )
     
 
     // Assign colors for each vertex
+    /* Še’¸“_–ˆ‚ÉF‚ğ•t‚¯‚éê‡
     var Color = new THREE.Color().setHex( cmap[isovalue][1] );
     material.vertexColors = THREE.VertexColors;
     var S_max = Math.max.apply(null,scalars);
@@ -111,9 +121,9 @@ function Isosurfaces( volume, isovalue )
 	geometry.faces[i].vertexColors.push( Color );
 	geometry.faces[i].vertexColors.push( Color );
 	geometry.faces[i].vertexColors.push( Color );
-    }
+    }*/
     
-    //cmapã®ç¬¬ä¸€å¼•æ•°ã§ã€ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ—ä¸­ã®è‰²ã‚’æŒ‡å®šã™ã‚‹.
+    //cmap‚Ì‘æˆêˆø”‚ÅAƒJƒ‰[ƒ}ƒbƒv’†‚ÌF‚ğw’è‚·‚é. --> ƒVƒF[ƒ_[‚ÉF‚Ìî•ñ‚ğ“n‚·•K—v‚ ‚è
     //var Color = new THREE.Color().setHex( cmap[isovalue][1] );
     //material.color = new THREE.Color( Color );
 
@@ -161,11 +171,23 @@ function Isosurfaces( volume, isovalue )
         return index;
     }
 
+    //üŒ`•âŠÔ‚·‚é•”•ª(Task2)
     function interpolated_vertex( v0, v1, s )
     {
-        return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
+        var xit = volume.resolution.x;
+	var yit = volume.resolution.y;
+	var id0 = v0.x + v0.y*xit + v0.z*xit*yit;   //À•Wv0‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ß‚é
+	var id1 = v1.x + v1.y*xit + v1.z*xit*yit;   //À•Wv1‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‹‚ß‚é
+	var s0 = volume.values[ id0 ][0];         //id0‚©‚çv0‚Ì’l(?)‚ğ‹‚ß‚é
+	var s1 = volume.values[ id1 ][0];         //id1‚©‚çv1‚Ì’l(?)‚ğ‹‚ß‚é
+	var t = (s - s0)/(s1 - s0);               //v0‚Æv1‚ÌŠÔ‚ÅüŒ`•âŠÔ‚ğs‚¤.
+	var x = v0.x + t*(v1.x-v0.x);
+	var y = v0.y + t*(v1.y-v0.y);
+	var z = v0.z + t*(v1.z-v0.z);
+        return new THREE.Vector3(x,y,z);
     }
 
+    /*
     function GetColor(S,S_min,S_max,cmap){
 	var resolution = cmap.length
 	var index = Normalize(S,S_min,S_max)*(resolution-1);
@@ -187,4 +209,5 @@ function Isosurfaces( volume, isovalue )
     function Interpolate(S0,S1,t){ 
 	return (1-t)*S0+t*S1;
     }
+    */
 }
