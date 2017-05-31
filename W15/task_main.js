@@ -1,7 +1,12 @@
+var volume = new KVS.LobsterData();
+var screen = new KVS.THREEScreen();
+
+var isovalue = 128;
+var surfaces;
+
 function main()
 {
-    var volume = new KVS.LobsterData();
-    var screen = new KVS.THREEScreen();
+   
 
     screen.init( volume, {
         width: window.innerWidth * 0.8,
@@ -13,8 +18,8 @@ function main()
     var bounds = Bounds( volume );
     screen.scene.add( bounds );
 
-    var isovalue = 128;
-    var surfaces = Isosurfaces( volume, isovalue );
+    //var isovalue = 128;
+    surfaces = Isosurfaces( volume, isovalue );
     screen.scene.add( surfaces );
 
     document.addEventListener( 'mousemove', function() {
@@ -26,4 +31,15 @@ function main()
     });
 
     screen.loop();
+}
+
+
+function kattsun(){
+            var obj = document.getElementById("isovalue");
+            var obj_value = obj.value;
+            document.getElementById("showRangeArea").textContent = obj.value;
+            isovalue = obj_value;
+            screen.scene.remove(surfaces);
+            surfaces = Isosurfaces(volume,isovalue);
+            screen.scene.add(surfaces);
 }
