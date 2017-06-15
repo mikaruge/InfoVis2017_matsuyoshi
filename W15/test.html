@@ -6,10 +6,10 @@
         <div id="display" style="width: 80%; float: left;"></div>
         <div id="controller" style="width: 20%; float:left;">
           <label id="label" style="font-family:Arial;"></label>
-          <input type="range" min="0" max="255" step="1" value="128" id="isovalue"/>
+          <input type="range" min="0" max="255" step="1" value="128" oninput="realtime_valuechange()" id="isovalue"/>
 	  <span id = "showRangeArea">128</span>
-          <button id="change-isovalue-button" onclick="kattsun()" style="font-family=Arial;">Apply</button>
-	  <input type="number" min="0" max="255" value="128" id="value_num" oninput="disp_num()"/> 
+	  isovalue:<input type="number" min="0" max="255" value="128" id="value_num"/>
+	  <button id="change-isovalue-button" onclick="input_isovalue()" style="font-family=Arial;">Apply</button>
         </div>  
         <script src="three.min.js"></script>
 	<script src="Lut.js"></script>
@@ -88,15 +88,29 @@
 	</script>
 	<script>
 	  main();
-          function kattsun(){
-            var obj = document.getElementById("isovalue");
+          function input_isovalue(){
+            var obj = document.getElementById("value_num");
             var obj_value = obj.value;
-            document.getElementById("showRangeArea").textContent = obj.value;
-            isovalue = obj_value;
+	    if(obj_value >= 0 && obj_value <= 255 && Math.round(obj_value)==obj_value){
+	      document.getElementById("showRangeArea").textContent = obj.value;
+              isovalue = obj_value;
+              screen.scene.remove(surfaces);
+              surfaces = Isosurfaces(volume,isovalue);
+	      screen.scene.add(surfaces);
+	    }else{
+	      alert("input 0 ~ 255 and integer");
+	    }			      
+          }
+
+	  function realtime_valuechange(){
+	    var obj = document.getElementById("isovalue");
+            var obj_value = obj.value;
+	    document.getElementById("showRangeArea").textContent = obj.value;
+	    isovalue = obj_value;
             screen.scene.remove(surfaces);
             surfaces = Isosurfaces(volume,isovalue);
-            screen.scene.add(surfaces);
-          }
+	    screen.scene.add(surfaces);
+	  }
 	  
 	</script>
     </body>

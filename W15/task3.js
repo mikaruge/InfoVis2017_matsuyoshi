@@ -1,4 +1,4 @@
-function Isosurfaces( volume, isovalue )
+function Isosurfaces( volume, isovalue, roughness ,reflec, shard)
 {
 
 
@@ -9,7 +9,7 @@ function Isosurfaces( volume, isovalue )
     {
       var S = i / (RESOLUTION-1); // [0,1]
       var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
-      var G = Math.max( Math.cos( ( S - 0.5 )* Math.PI ), 0.0 );
+      var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
       var B = Math.max( Math.cos(  S * Math.PI ), 0.0 );
       var color = new THREE.Color( R, G, B );
       cmap.push( [ S, '0x' + color.getHexString() ] );
@@ -21,15 +21,35 @@ function Isosurfaces( volume, isovalue )
     //var material = new THREE.MeshLambertMaterial();
     var light = new THREE.PointLight();
     light.position.set( 5, 5, 5 );
+    //var arasa = 0.5;
+
+
+    //reflectionの方法のフラグ処理
+    if(reflec == "lambertian") reflec = 1;
+    else if(reflec == "phong") reflec = 2;
+    else if(reflec == "cook-Torrance") reflec = 3;
+
+    //sharding方式のフラク処理
+    var shardvert = 'phong.vert';
+    var shardfrag = 'phong.frag';
+    if(shard == "gouraud"){
+	shardvert = 'gouraud.vert';
+	shardfrag = 'gouraud.frag'; /*alert("input 0 ~ 1.0"); */
+    }else{
+	shardvert = 'phong.vert';
+	shardfrag = 'phong.frag';
+    }
 
     //カラーマップから抜き出した色の情報をシェーダーに渡す必要がある.
     var material = new THREE.ShaderMaterial({
         vertexColors: THREE.VertexColors,
-        vertexShader: document.getElementById('phong.vert').text,
-        fragmentShader: document.getElementById('phong.frag').text,
+        vertexShader: document.getElementById(shardvert).text,
+        fragmentShader: document.getElementById(shardfrag).text,
 	uniforms: {
 	    light_position: { type: "v3", value: light.position },
-	    color_value: { type: "v3", value: new THREE.Color().setHex( cmap[isovalue][1] ) }
+	    color_value: { type: "c", value: new THREE.Color().setHex( cmap[isovalue][1] ) },
+	    arasa_value: { type: "f", value: roughness },
+	    reflec_value: { type: "i", value: reflec }
 	}
     });
     
