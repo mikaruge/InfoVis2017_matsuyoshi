@@ -1,46 +1,45 @@
 <html>
     <head>
-	<title>W15: Final Task</title>
+	<title>W15: Final Test</title>
     </head>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=shift-jis">
     <body style="margin:0">
         <div id="display" style="width: 75%; float: left;"></div>
         <div id="controller" style="width: 25%; float:left;">
           <label id="label" style="font-family:Arial;"></label>
-	  ‘€ì€–Ú:<br>
-	  1.isovalue‚Ì•ÏX<br>
-	  2.•\–Ê‚Ì‘e‚³‚Ì•ÏX(reflectionƒ‚ƒfƒ‹‚Æ‚µ‚ÄAcook-Torrance‚ğ‘I‘ğ‚µ‚Ä‚¢‚éê‡)<br>
-	  3.reflectionƒ‚ƒfƒ‹‚Ì•ÏX<br>
-	  4.ƒVƒF[ƒfƒBƒ“ƒO•û–@‚Ì•ÏX<br>
-	  5.‰Šú‰»<br><br><br>
-          isovalue:<input type="range" min="0" max="255" step="1" value="128" oninput="realtime_IsovalueChange()" onmousemove="realtime_IsovalueChange()" id="isovalue"/><br>
+	  Manual:<br>
+	  1.Change of "isovalue"<br>
+	  2.Change of "roughness"(reflection model = 'cook-Torrance')<br>
+	  3.Change of "reflection model"<br>
+	  4.Change of "shading"<br>
+	  5.Initialize<br><br><br>
+          isovalue:<input type="range" min="0" max="255" step="1" value="128" oninput="realtime_IsovalueChange()" onchange="realtime_IsovalueChange()" id="isovalue"/><br>
 	  <input type="number" min="0" max="255" value="128" id="value_isovalue"/>
 	  <button id="change-isovalue-button" onclick="input_isovalue()" style="font-family=Arial;">Apply</button><br>
-	  Œ»İ‚Ì’l:<span id = "showIsovalue">128</span><br><br>
-	  •\–Ê‚Ì‘e‚³:<input type="range" min="0" max="1.0" step="0.01" value="0.5" oninput="realtime_RoughnessChange()" onmousemove="realtime_RoughnessChange()" id="roughness"/><br>
+	  current value:<span id = "showIsovalue">128</span><br><br>
+	  roughness:<input type="range" min="0" max="1.0" step="0.01" value="0.5" oninput="realtime_RoughnessChange()" onchange="realtime_RoughnessChange()" id="roughness"/><br>
 	  <input type="number" min="0" max="1.0" value="0.5" id="value_roughness"/>
 	  <button id="change-roughness-button" onclick="input_roughnessvalue()" style="font-family=Arial;">Apply</button><br>
-	  Œ»İ‚Ì’l:<span id = "showRoughness">0.5</span><br><br>
-	  <p>reflectionƒ‚ƒfƒ‹‚ğ‘I‘ğ<br>
+	  current value:<span id = "showRoughness">0.5</span><br><br>
+	  <p>selection of 'reflection model'<br>
 	  <select id="reflection">
 	  <option value="lambertian">lambertian</option>
 	  <option value="phong">phong</option>  
 	  <option value="cook-Torrance">cook-Torrance</option>
 	  </select>
 	  <button id="change-reflection-button" onclick="input_reflectionchange()" style="font-family=Arial;">Apply</button><br>
-	  Œ»İ‚Ì’l:<span id = "showReflection">phong</span><br><br>
-	  <p>ƒVƒF[ƒfƒBƒ“ƒO•û–@‚ğ‘I‘ğ<br>
+	  current value:<span id = "showReflection">phong</span><br><br>
+	  <p>selection of 'shading'<br>
 	  <select id="sharding">
 	  <option value="gouraud">gouraud</option>    
 	  <option value="phong">phong</option>
 	  </select>
 	  <button id="change-sharding-button" onclick="input_shardingchange()" style="font-family=Arial;">Apply</button><br>
-	  Œ»İ‚Ì’l:<span id = "showSharding">phong</span>
+	  current value:<span id = "showSharding">phong</span>
 	  <br><br><br>
-          <button id="init-button" onclick="init()" style="font-family=Arial;">‰Šú‰»</button><br>
+          <button id="init-button" onclick="init()" style="font-family=Arial;">inisitialize</button><br>
 	  <br><br>
-	  ŠwĞ”Ô†:177X121X<br>
-	  –¼:¼D—S‹I
+	  177X121X<br>
+	  Matsuyoshi Yuki
         </div>  
         <script src="three.min.js"></script>
 	<script src="Lut.js"></script>
@@ -96,11 +95,11 @@
 	   float ks = 0.8;
 	   float n = 50.0;
 	 
-	   float roughness = arasa_value;   //•\–Ê‚Ì‘e‚³iHj
-	   float f0 = 0.6;          //ƒtƒŒƒlƒ‹”½Ë—¦
-	   float refraction;     //‹üÜ—¦
+	   float roughness = arasa_value;   //è¡¨é¢ã®ç²—ã•ï¼ˆï¼Ÿï¼‰
+	   float f0 = 0.6;          //ãƒ•ãƒ¬ãƒãƒ«åå°„ç‡
+	   float refraction;     //å±ˆæŠ˜ç‡
 
-	   refraction = (1.0 + sqrt(f0))/(1.0 - sqrt(f0));    //ƒtƒŒƒlƒ‹”½Ë—¦‚©‚ç‹üÜ—¦‚ğ‹‚ß‚é
+	   refraction = (1.0 + sqrt(f0))/(1.0 - sqrt(f0));    //ãƒ•ãƒ¬ãƒãƒ«åå°„ç‡ã‹ã‚‰å±ˆæŠ˜ç‡ã‚’æ±‚ã‚ã‚‹
 	 
 	   vec3 V = normalize( camera_position - point_position.xyz );
 	   vec3 H = normalize( L + V );
@@ -192,11 +191,11 @@
 	   float ks = 0.8;
 	   float n = 50.0;
 	 
-	   float roughness = arasa_value;   //•\–Ê‚Ì‘e‚³iHj
-	   float f0 = 0.6;          //ƒtƒŒƒlƒ‹”½Ë—¦
-	   float refraction;     //‹üÜ—¦
+	   float roughness = arasa_value;   //è¡¨é¢ã®ç²—ã•ï¼ˆï¼Ÿï¼‰
+	   float f0 = 0.6;          //ãƒ•ãƒ¬ãƒãƒ«åå°„ç‡
+	   float refraction;     //å±ˆæŠ˜ç‡
 
-	   refraction = (1.0 + sqrt(f0))/(1.0 - sqrt(f0));    //ƒtƒŒƒlƒ‹”½Ë—¦‚©‚ç‹üÜ—¦‚ğ‹‚ß‚é
+	   refraction = (1.0 + sqrt(f0))/(1.0 - sqrt(f0));    //ãƒ•ãƒ¬ãƒãƒ«åå°„ç‡ã‹ã‚‰å±ˆæŠ˜ç‡ã‚’æ±‚ã‚ã‚‹
 	 
 	   vec3 V = normalize( camera_position - point_position.xyz );
 	   vec3 H = normalize( L + V );
